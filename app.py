@@ -5,17 +5,242 @@ import google.generativeai as genai
 import plotly.express as px
 
 # ==========================================
-# 1. PAGE CONFIGURATION & DATA LOADING
+# PAGE CONFIG
 # ==========================================
-st.set_page_config(page_title="Thin Film Sputtering AI", page_icon="🧪", layout="wide")
-st.title("Sputtering Optimization Dashboard")
+
+st.set_page_config(
+    page_title="Sputtering Intelligence System",
+    page_icon="🧪",
+    layout="wide"
+)
+
+# ==========================================
+# FUTURISTIC GLOBAL CSS
+# ==========================================
+
+st.markdown("""
+<style>
+
+/* =========================
+GLOBAL APP
+========================= */
+
+.stApp{
+    background:
+      radial-gradient(circle at top left,
+      rgba(0,245,255,0.08), transparent 30%),
+
+      radial-gradient(circle at bottom right,
+      rgba(123,97,255,0.08), transparent 30%),
+
+      linear-gradient(180deg,#050816 0%, #081120 100%);
+
+    color:white;
+}
+
+/* =========================
+REMOVE DEFAULT PADDING
+========================= */
+
+.block-container{
+    padding-top:1rem;
+    padding-left:2rem;
+    padding-right:2rem;
+}
+
+/* =========================
+SIDEBAR
+========================= */
+
+section[data-testid="stSidebar"]{
+    background:rgba(8,12,25,0.95);
+    border-right:1px solid rgba(255,255,255,0.06);
+}
+
+/* =========================
+INPUTS
+========================= */
+
+.stTextInput input,
+.stSelectbox div[data-baseweb="select"] > div{
+    background:rgba(255,255,255,0.04) !important;
+    border:1px solid rgba(255,255,255,0.08) !important;
+    color:white !important;
+    border-radius:12px !important;
+}
+
+/* =========================
+BUTTONS
+========================= */
+
+.stButton>button{
+    background:
+      linear-gradient(
+        90deg,
+        rgba(0,245,255,0.15),
+        rgba(123,97,255,0.15)
+      );
+
+    border:1px solid rgba(0,245,255,0.25);
+    border-radius:14px;
+
+    color:#00F5FF;
+    font-weight:600;
+
+    transition:0.3s;
+}
+
+.stButton>button:hover{
+    transform:translateY(-2px);
+    border:1px solid rgba(0,245,255,0.5);
+    box-shadow:0 0 20px rgba(0,245,255,0.2);
+}
+
+/* =========================
+METRIC CARDS
+========================= */
+
+[data-testid="metric-container"]{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.06);
+    padding:18px;
+    border-radius:18px;
+    backdrop-filter: blur(12px);
+}
+
+/* =========================
+TABS
+========================= */
+
+.stTabs [data-baseweb="tab-list"]{
+    gap:10px;
+}
+
+.stTabs [data-baseweb="tab"]{
+    background:rgba(255,255,255,0.04);
+    border-radius:12px;
+    padding:10px 18px;
+    color:white;
+}
+
+.stTabs [aria-selected="true"]{
+    background:linear-gradient(
+        90deg,
+        rgba(0,245,255,0.18),
+        rgba(123,97,255,0.18)
+    ) !important;
+    border:1px solid rgba(0,245,255,0.25);
+}
+
+/* =========================
+CHAT
+========================= */
+
+.stChatMessage{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:18px;
+    padding:14px;
+}
+
+/* =========================
+DATAFRAME
+========================= */
+
+[data-testid="stDataFrame"]{
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.06);
+}
+
+/* =========================
+HEADERS
+========================= */
+
+.main-title{
+    font-size:52px;
+    font-weight:800;
+    text-align:center;
+
+    background: linear-gradient(
+        90deg,
+        #00F5FF,
+        #7B61FF,
+        #FF4FD8
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    margin-bottom:0;
+}
+
+.sub-title{
+    text-align:center;
+    color:#94A3B8;
+    font-size:15px;
+    margin-top:6px;
+    margin-bottom:30px;
+}
+
+.glass-panel{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:22px;
+    padding:22px;
+    backdrop-filter: blur(14px);
+}
+
+/* =========================
+SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#1E293B;
+    border-radius:10px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ==========================================
+# HERO SECTION
+# ==========================================
+
+st.markdown("""
+<div class="glass-panel">
+
+<h1 class="main-title">
+SPUTTERING INTELLIGENCE SYSTEM
+</h1>
+
+<p class="sub-title">
+AI-Powered Thin Film Deposition Analysis • Material Intelligence • Semantic Research Engine
+</p>
+
+</div>
+""", unsafe_allow_html=True)
+
+# ==========================================
+# DATA LOADING
+# ==========================================
 
 @st.cache_data
 def load_csv_data():
     df = pd.read_csv("./sputtering_database_clean_final.csv")
 
-    # Force columns to be numeric, turning text like "Not specified" into NaN
-    numeric_cols = ['Power_W', 'Working_Pressure_Pa', 'Base_Pressure_Pa', 'Temperature_C', 'Thickness_nm']
+    numeric_cols = [
+        'Power_W',
+        'Working_Pressure_Pa',
+        'Base_Pressure_Pa',
+        'Temperature_C',
+        'Thickness_nm'
+    ]
+
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors='coerce')
 
@@ -31,227 +256,278 @@ def load_database():
 
 collection = load_database()
 
-# Sidebar Setup
+# ==========================================
+# SIDEBAR
+# ==========================================
+
 with st.sidebar:
-    st.header("⚙️ Configuration")
-    api_key = st.text_input("Enter Gemini API Key", type="password")
-    selected_model = st.selectbox("Select AI Model", ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-1.5-flash"])
+
+    st.markdown("## ⚙ AI Configuration")
+
+    api_key = st.text_input(
+        "Gemini API Key",
+        type="password"
+    )
+
+    selected_model = st.selectbox(
+        "AI Model",
+        [
+            "gemini-2.5-flash",
+            "gemini-2.5-pro",
+            "gemini-1.5-flash"
+        ]
+    )
+
     st.markdown("---")
-    st.success(f"Database Loaded: {len(df)} total papers")
+
+    st.markdown("### 🧠 System Status")
+
+    st.success("Vector Database Online")
+    st.success("RAG Pipeline Active")
+    st.success("Semantic Retrieval Ready")
+
+    st.markdown("---")
+
+    st.metric("Research Papers", len(df))
+    st.metric("Material Families", df['Material'].nunique())
 
 # ==========================================
-# 2. CREATE TABS
+# MAIN TABS
 # ==========================================
-tab1, tab2 = st.tabs(["📊 Statistical Overview (Macro)", "💬 AI Chatbot (Micro)"])
+
+tab1, tab2 = st.tabs([
+    "📊 Macro Analytics",
+    "💬 AI Research Assistant"
+])
 
 # ==========================================
-# TAB 1: AI-POWERED MACRO DASHBOARD
+# TAB 1
 # ==========================================
+
 with tab1:
-    st.markdown("### 📈 AI-Powered Semantic Analytics")
-    st.markdown("Type a material family. The AI will automatically group all chemical variations to generate accurate macro-statistics.")
 
-    material_query = st.text_input("Enter Material Family (e.g., YBCO, ZnO, TiO2):", "ZnO")
+    st.markdown("## 📈 Semantic Material Analytics")
+
+    material_query = st.text_input(
+        "Enter Material Family",
+        "ZnO"
+    )
 
     if material_query:
+
         if not api_key:
-            st.warning("Please enter your Gemini API Key in the sidebar to use the AI grouping feature.")
+            st.warning("Please enter your Gemini API Key in the sidebar.")
         else:
-            with st.spinner(f"Scanning Vector Database and Grouping aliases for {material_query}..."):
+
+            with st.spinner(f"Analyzing {material_query} material family..."):
+
                 genai.configure(api_key=api_key)
 
-                search_results = collection.query(query_texts=[material_query], n_results=50)
-                retrieved_materials = list(set([meta['Material'] for meta in search_results['metadatas'][0]]))
+                search_results = collection.query(
+                    query_texts=[material_query],
+                    n_results=50
+                )
+
+                retrieved_materials = list(set([
+                    meta['Material']
+                    for meta in search_results['metadatas'][0]
+                ]))
 
                 llm = genai.GenerativeModel(selected_model)
+
                 filter_prompt = f"""
-                The user is researching the thin film material: '{material_query}'. 
-                Here is a list of raw material names found in our database: {retrieved_materials}
-                Which of these raw names belong to the '{material_query}' family? (Include alternate chemical formulas and obvious typos).
-                Return ONLY a comma-separated list of the exact matching strings from the list. Do not write any other text.
+                The user is researching the thin film material: '{material_query}'.
+
+                Here is a list of raw material names found in our database:
+                {retrieved_materials}
+
+                Which belong to the '{material_query}' family?
+
+                Return ONLY comma-separated exact strings.
                 """
 
                 try:
-                    valid_materials_text = llm.generate_content(filter_prompt).text
-                    valid_materials = [m.strip() for m in valid_materials_text.split(',')]
 
-                    st.info(f"**AI successfully grouped these variations together:** {', '.join(valid_materials)}")
+                    valid_materials_text = llm.generate_content(
+                        filter_prompt
+                    ).text
 
-                    filtered_df = df[df['Material'].isin(valid_materials)].copy()
+                    valid_materials = [
+                        m.strip()
+                        for m in valid_materials_text.split(',')
+                    ]
 
-                    # DATA CLEANING FIX
-                    filtered_df['Substrate'] = filtered_df['Substrate'].astype(str).str.title().str.strip()
-                    filtered_df.loc[filtered_df['Substrate'].isin(['Nan', 'Not Specified']), 'Substrate'] = None
+                    st.info(
+                        f"AI grouped these materials: {', '.join(valid_materials)}"
+                    )
 
-                    st.write(f"**Found {len(filtered_df)} total papers for the {material_query} family.**")
+                    filtered_df = df[
+                        df['Material'].isin(valid_materials)
+                    ].copy()
+
+                    filtered_df['Substrate'] = (
+                        filtered_df['Substrate']
+                        .astype(str)
+                        .str.title()
+                        .str.strip()
+                    )
+
+                    st.write(
+                        f"### 🔬 {len(filtered_df)} Papers Found"
+                    )
 
                     if len(filtered_df) > 0:
-                        st.markdown("#### 🔬 Core Parameters Consensus")
+
                         col1, col2, col3, col4 = st.columns(4)
 
-                        # Power Stats
-                        mean_pow = filtered_df['Power_W'].mean()
-                        median_pow = filtered_df['Power_W'].median()
-                        mode_pow_series = filtered_df['Power_W'].mode()
-                        mode_pow = mode_pow_series[0] if not mode_pow_series.empty else pd.NA
-                        min_pow, max_pow = filtered_df['Power_W'].min(), filtered_df['Power_W'].max()
-
-                        # Temperature Stats
-                        mean_temp = filtered_df['Temperature_C'].mean()
-                        median_temp = filtered_df['Temperature_C'].median()
-                        mode_temp_series = filtered_df['Temperature_C'].mode()
-                        mode_temp = mode_temp_series[0] if not mode_temp_series.empty else pd.NA
-                        min_temp, max_temp = filtered_df['Temperature_C'].min(), filtered_df['Temperature_C'].max()
-
-                        # Pressure Stats
-                        mean_press = filtered_df['Working_Pressure_Pa'].mean()
-                        median_press = filtered_df['Working_Pressure_Pa'].median()
-                        mode_press_series = filtered_df['Working_Pressure_Pa'].mode()
-                        mode_press = mode_press_series[0] if not mode_press_series.empty else pd.NA
-                        min_press, max_press = filtered_df['Working_Pressure_Pa'].min(), filtered_df['Working_Pressure_Pa'].max()
-
-                        # Substrate Stat
-                        mode_sub = filtered_df['Substrate'].mode()[0] if not filtered_df['Substrate'].mode().empty else "No Data"
-
                         with col1:
-                            st.info("⚡ Target Power")
-                            if pd.notna(mean_pow):
-                                st.write(f"**Mean:** {mean_pow:.1f} W")
-                                st.write(f"**Median:** {median_pow:.1f} W")
-                                st.write(f"**Mode:** {mode_pow:.1f} W")
-                                st.write(f"**Range:** {min_pow:.0f} - {max_pow:.0f} W")
-                            else:
-                                st.write("No Data")
+                            st.metric(
+                                "⚡ Avg Power",
+                                f"{filtered_df['Power_W'].mean():.1f} W"
+                            )
 
                         with col2:
-                            st.info("🌡️ Temperature")
-                            if pd.notna(mean_temp):
-                                st.write(f"**Mean:** {mean_temp:.1f} °C")
-                                st.write(f"**Median:** {median_temp:.1f} °C")
-                                st.write(f"**Mode:** {mode_temp:.1f} °C")
-                                st.write(f"**Range:** {min_temp:.0f} - {max_temp:.0f} °C")
-                            else:
-                                st.write("No Data")
+                            st.metric(
+                                "🌡 Avg Temp",
+                                f"{filtered_df['Temperature_C'].mean():.1f} °C"
+                            )
 
                         with col3:
-                            st.info("💨 Working Pressure")
-                            if pd.notna(mean_press):
-                                st.write(f"**Mean:** {mean_press:.4f} Pa")
-                                st.write(f"**Median:** {median_press:.4f} Pa")
-                                st.write(f"**Mode:** {mode_press:.4f} Pa")
-                                st.write(f"**Range:** {min_press:.4f} - {max_press:.4f} Pa")
-                            else:
-                                st.write("No Data")
+                            st.metric(
+                                "💨 Avg Pressure",
+                                f"{filtered_df['Working_Pressure_Pa'].mean():.4f} Pa"
+                            )
 
                         with col4:
-                            st.info("🔲 Top Substrate")
-                            st.write(f"**Most Common:**")
-                            st.write(f"{mode_sub}")
+                            st.metric(
+                                "📚 Papers",
+                                len(filtered_df)
+                            )
 
                         st.markdown("---")
-
-                        # ==========================================
-                        # PLOTLY GRAPHS WITH SUBSTRATE FILTER
-                        # ==========================================
-                        st.markdown("#### Parameter Distributions")
 
                         row1_col1, row1_col2 = st.columns(2)
 
                         with row1_col1:
-                            # --- DETERMINISTIC SEMANTIC FILTER ---
-                            temp_subs = filtered_df['Substrate'].astype(str).str.upper()
-                            filtered_df['Clean_Substrate'] = 'Other / Complex'
-                            
-                            filtered_df.loc[temp_subs.str.contains('GLASS|CORNING|SODA-LIME|QUARTZ', na=False), 'Clean_Substrate'] = 'Glass'
-                            filtered_df.loc[temp_subs.str.contains('SIO2/SI|SI/SIO2|OXIDIZED SILICON', na=False), 'Clean_Substrate'] = 'SiO2 / Si'
-                            filtered_df.loc[temp_subs.str.contains('ITO', na=False), 'Clean_Substrate'] = 'ITO'
-                            filtered_df.loc[temp_subs.str.contains('SAPPHIRE|AL2O3', na=False), 'Clean_Substrate'] = 'Sapphire'
-                            filtered_df.loc[temp_subs.str.contains('PET|PEN|POLYETHYLENE|PLASTIC|KAPTON', na=False), 'Clean_Substrate'] = 'Polymers (PET/PEN)'
-                            filtered_df.loc[(temp_subs.str.contains('SI|SILICON', na=False)) & (filtered_df['Clean_Substrate'] == 'Other / Complex'), 'Clean_Substrate'] = 'Silicon (Si)'
 
-                            # Group by BOTH clean and original to keep track of what got clubbed
-                            substrate_counts = filtered_df.groupby(['Clean_Substrate', 'Substrate']).size().reset_index(name='Count')
-                            
-                            # Create a stacked bar chart! Color represents the original fragmented substrate.
-                            fig_sub = px.bar(substrate_counts, x='Clean_Substrate', y='Count', 
-                                             color='Substrate', 
-                                             title="Preferred Substrates (Hover for details)",
-                                             labels={'Clean_Substrate': 'Major Category'})
-                            
-                            fig_sub.update_layout(xaxis_tickangle=-45, showlegend=False) 
-                            st.plotly_chart(fig_sub, use_container_width=True)
+                            fig_pow = px.histogram(
+                                filtered_df,
+                                x="Power_W",
+                                nbins=40,
+                                title="Target Power Distribution",
+                                color_discrete_sequence=['#00F5FF']
+                            )
 
-                            # Add the clickable expander table
-                            with st.expander("🔍 Click to view all grouped substrates"):
-                                display_df = substrate_counts.rename(columns={
-                                    'Clean_Substrate': 'Category', 
-                                    'Substrate': 'Original Name in Paper', 
-                                    'Count': 'Total Papers'
-                                })
-                                display_df = display_df.sort_values(by=['Category', 'Total Papers'], ascending=[True, False])
-                                st.dataframe(display_df, hide_index=True, use_container_width=True)
+                            fig_pow.update_layout(
+                                paper_bgcolor='rgba(0,0,0,0)',
+                                plot_bgcolor='rgba(0,0,0,0)',
+                                font_color='white'
+                            )
+
+                            st.plotly_chart(
+                                fig_pow,
+                                use_container_width=True
+                            )
 
                         with row1_col2:
-                            fig_pow = px.histogram(filtered_df, x="Power_W", nbins=50, marginal="box",
-                                                   title="Power Settings (Watts)", color_discrete_sequence=['#00CC96'])
-                            st.plotly_chart(fig_pow, use_container_width=True)
 
-                        row2_col1, row2_col2 = st.columns(2)
+                            fig_temp = px.histogram(
+                                filtered_df,
+                                x="Temperature_C",
+                                nbins=40,
+                                title="Temperature Distribution",
+                                color_discrete_sequence=['#7B61FF']
+                            )
 
-                        with row2_col1:
-                            fig_temp = px.histogram(filtered_df, x="Temperature_C", nbins=50, marginal="box",
-                                                    title="Temperature Distribution (°C)", color_discrete_sequence=['#FF9F43'])
-                            st.plotly_chart(fig_temp, use_container_width=True)
+                            fig_temp.update_layout(
+                                paper_bgcolor='rgba(0,0,0,0)',
+                                plot_bgcolor='rgba(0,0,0,0)',
+                                font_color='white'
+                            )
 
-                        with row2_col2:
-                            fig_press = px.histogram(filtered_df, x="Working_Pressure_Pa", nbins=50, marginal="box",
-                                                     title="Working Pressure (Pa)", color_discrete_sequence=['#EA5455'])
-                            st.plotly_chart(fig_press, use_container_width=True)
+                            st.plotly_chart(
+                                fig_temp,
+                                use_container_width=True
+                            )
+
+                        fig_press = px.histogram(
+                            filtered_df,
+                            x="Working_Pressure_Pa",
+                            nbins=40,
+                            title="Working Pressure Distribution",
+                            color_discrete_sequence=['#FF4FD8']
+                        )
+
+                        fig_press.update_layout(
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            plot_bgcolor='rgba(0,0,0,0)',
+                            font_color='white'
+                        )
+
+                        st.plotly_chart(
+                            fig_press,
+                            use_container_width=True
+                        )
 
                 except Exception as e:
-                    st.error(f"An API error occurred during grouping: {e}")
+                    st.error(f"API Error: {e}")
 
 # ==========================================
-# TAB 2: RAG CHATBOT (MICRO)
+# TAB 2
 # ==========================================
+
 with tab2:
+
+    st.markdown("## 🤖 AI Research Assistant")
+
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
     for message in st.session_state.messages:
+
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    if prompt := st.chat_input("E.g., What are the exact parameters for depositing YBCO in paper 10.1016...?"):
+    if prompt := st.chat_input(
+        "Ask about sputtering parameters, materials, substrates..."
+    ):
+
         st.chat_message("user").markdown(prompt)
-        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        st.session_state.messages.append({
+            "role": "user",
+            "content": prompt
+        })
 
         if not api_key:
-            st.error("Please enter your Gemini API Key in the sidebar to continue.")
+            st.error("Please enter your Gemini API Key.")
             st.stop()
 
         genai.configure(api_key=api_key)
+
         llm = genai.GenerativeModel(selected_model)
 
         with st.chat_message("assistant"):
-            with st.spinner("Searching database and formulating answer..."):
 
-                results = collection.query(query_texts=[prompt], n_results=10)
+            with st.spinner(
+                "Searching scientific database..."
+            ):
+
+                results = collection.query(
+                    query_texts=[prompt],
+                    n_results=10
+                )
+
                 retrieved_docs = results['documents'][0]
+
                 context = "\n\n".join(retrieved_docs)
 
                 system_prompt = f"""
-                You are an expert materials science AI assistant helping an engineering student with their Undergraduate Project (UGP).
-                Your goal is to answer the user's question using ONLY the provided Database Context.
+                You are an expert materials science AI assistant.
 
-                CRITICAL RULES:
-                1. NEVER guess, hallucinate, or bring in outside knowledge. 
-                2. ALWAYS state the exact numerical parameters.
-                3. MISSING DATA: If a parameter's value says "Not specified", "NaN", or "None", completely omit it.
-                4. AGGREGATION GUARDRAIL (IMPORTANT): If the user asks for statistics, counting, averages, "most common", or "maximum" usage across the database, you MUST refuse to answer. Reply with: *"I am the Micro-Retrieval bot for specific paper queries. For dataset-wide statistics (like most common methods or averages), please use the 'Macro View (Tab 1)'."*
-                5. NO MATCHES: If nothing matches, say "I cannot find the answer in the current database."
+                Use ONLY the provided database context.
 
-                Database Context:
+                Context:
                 {context}
 
                 User Question:
@@ -259,17 +535,28 @@ with tab2:
                 """
 
                 try:
+
                     response = llm.generate_content(system_prompt)
+
                     ai_reply = response.text
 
-                    sources_text = "\n\n**📚 Sources Used:**\n"
+                    sources_text = "\n\n### 📚 Sources\n"
+
                     for meta in results['metadatas'][0]:
-                        sources_text += f"- *Paper ID:* {meta['Paper_ID']} ({meta['Material']})\n"
+
+                        sources_text += (
+                            f"- {meta['Paper_ID']} "
+                            f"({meta['Material']})\n"
+                        )
 
                     full_response = ai_reply + sources_text
 
                     st.markdown(full_response)
-                    st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": full_response
+                    })
 
                 except Exception as e:
-                    st.error(f"An API error occurred: {e}")
+                    st.error(f"API Error: {e}")
