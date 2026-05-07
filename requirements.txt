@@ -4,3 +4,4 @@ google-generativeai
 plotly
 pandas
 pysqlite3-binary
+sentence-transformers
